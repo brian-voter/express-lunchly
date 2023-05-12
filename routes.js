@@ -10,10 +10,25 @@ const Reservation = require("./models/reservation");
 
 const router = new express.Router();
 
+/**
+ * Gets the ten customers who made the most reservations.
+ */
+router.get("/top-ten", async function (req, res, next) {
+  const customers = await Customer.getBest(10);
+
+  return res.render("customer_list.html", { customers });
+});
+
+
 /** Homepage: show list of customers. */
 
 router.get("/", async function (req, res, next) {
-  const customers = await Customer.all();
+  const searchTerm = req.query.search;
+
+  const customers = (searchTerm && searchTerm.trim() != "") ?
+    await Customer.search(searchTerm)
+    : await Customer.all();
+
   return res.render("customer_list.html", { customers });
 });
 
